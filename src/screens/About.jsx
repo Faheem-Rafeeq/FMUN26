@@ -1,56 +1,37 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const AboutUs = () => {
   const [activeTab, setActiveTab] = useState("what-is-mun");
 
-  const testimonials = [
-    {
-      name: "Faizan Afzal",
-      role: "Best Delegate, UNSC 2024",
-      review: "FMUN transformed my perspective on international diplomacy. The level of debate was exceptional!",
-      rating: 5,
-      image: "👩‍🎓"
-    },
-    {
-      name: "Zeeshan Arafan",
-      role: "Delegate, 2024",
-      review: "The most professionally organized MUN I've attended. The executive board was outstanding!",
-      rating: 5,
-      image: "👨‍💼"
-    },
-    {
-      name: "Ali Asghar Abbas",
-      role: "Delegate, PNA 2024",
-      review: "Covering FMUN was an incredible experience. The press team atmosphere was electrifying!",
-      rating: 4,
-      image: "👩‍💻"
-    }
-  ];
-
   const faqs = [
     {
       question: "What is Model United Nations?",
-      answer: "Model UN is an educational simulation where students learn about diplomacy, international relations, and the United Nations."
+      answer: "Model UN is an educational simulation where students learn about diplomacy, international relations, and parliamentary procedures."
     },
     {
       question: "Who can participate in FMUN?",
-      answer: "FMUN is open to all FDC Faisal students. No prior MUN experience is required."
+      answer: "FMUN is open to all Fazaia Degree College Faisal students. No prior MUN experience is required."
     },
     {
       question: "What committees are available?",
-      answer: "We offer UNSC, UNHRC, WHO, UNGO, and PNA committees covering various global issues."
+      answer: "We offer five committees: PNA (Pakistan National Assembly), UNSC (UN Security Council), UN Women, SOCHUM, and WHO."
     },
     {
       question: "How can I register?",
-      answer: "Register through our website portal. Early bird discounts are available for timely registration."
+      answer: "Register through our website portal. For any queries, contact us on WhatsApp: 03076646639"
+    },
+    {
+      question: "What are the fees?",
+      answer: "Delegate: PKR 2,500 | Observer: PKR 3,000 | Qawali Night: PKR 1,250 | Concert: PKR 1,250 | Both Events: PKR 2,000"
     }
   ];
 
   const stats = [
-    { number: "500+", label: "Past Delegates" },
-    { number: "6", label: "Committees" },
+    { number: "300+", label: "Expected Delegates" },
+    { number: "5", label: "Committees" },
     { number: "2", label: "Conference Days" },
-    { number: "50+", label: "Executive Board" }
+    { number: "25+", label: "Executive Board" }
   ];
 
   return (
@@ -63,7 +44,7 @@ const AboutUs = () => {
               About FMUN
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
-              Where Future Diplomats Are Forged Through Debate & Diplomacy
+              Fazaia Model United Nations - Where Future Leaders Are Forged Through Debate & Diplomacy
             </p>
           </div>
         </div>
@@ -166,9 +147,9 @@ const AboutUs = () => {
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">Model United Nations</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      Model United Nations is an educational simulation and academic competition where students 
-                      learn about diplomacy, international relations, and the United Nations. Participants role-play 
-                      as diplomats representing a country or NGO in a simulated session of a UN committee.
+                      Model United Nations is an educational simulation where students learn about diplomacy, 
+                      international relations, and parliamentary procedures. Participants role-play as diplomats 
+                      representing a country or organization in a simulated session of a UN committee.
                     </p>
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl">
@@ -181,7 +162,7 @@ const AboutUs = () => {
                       </div>
                       <div className="text-center p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl">
                         <div className="text-2xl mb-2">📝</div>
-                        <div className="font-bold">Research</div>
+                        <div className="font-bold">Resolution Writing</div>
                       </div>
                     </div>
                   </div>
@@ -198,10 +179,9 @@ const AboutUs = () => {
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">About FMUN</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      FMUN (Future Model United Nations) is one of premier MUN conferences, 
-                      organized annually to provide students with a platform to engage in meaningful 
-                      diplomatic discourse. Since our inception, we have hosted thousands of delegates 
-                      from across the country.
+                      FMUN (Fazaia Model United Nations) is the flagship MUN conference of Fazaia Degree College Faisal, 
+                      organized annually to provide students with a platform to engage in meaningful diplomatic discourse 
+                      and parliamentary debate.
                     </p>
                     <div className="mt-6">
                       <h4 className="text-xl font-bold text-gray-800 mb-3">Our Journey</h4>
@@ -212,21 +192,21 @@ const AboutUs = () => {
                             <div className="absolute -left-9 top-2 w-4 h-4 bg-blue-500 rounded-full"></div>
                             <div>
                               <div className="font-bold text-gray-800">2023</div>
-                              <div className="text-gray-600"> FMUN conference with 200+ delegates</div>
+                              <div className="text-gray-600">First FMUN conference with 150+ delegates</div>
                             </div>
                           </div>
                           <div className="relative">
                             <div className="absolute -left-9 top-2 w-4 h-4 bg-purple-500 rounded-full"></div>
                             <div>
                               <div className="font-bold text-gray-800">2024</div>
-                              <div className="text-gray-600">Expanded to 6 committees with international participation</div>
+                              <div className="text-gray-600">Expanded to 5 committees with 250+ delegates</div>
                             </div>
                           </div>
                           <div className="relative">
                             <div className="absolute -left-9 top-2 w-4 h-4 bg-green-500 rounded-full"></div>
                             <div>
                               <div className="font-bold text-gray-800">2026</div>
-                              <div className="text-gray-600">Largest edition with 500+ delegates expected</div>
+                              <div className="text-gray-600">Biggest edition yet with 300+ delegates expected</div>
                             </div>
                           </div>
                         </div>
@@ -246,9 +226,8 @@ const AboutUs = () => {
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">Our Mission & Vision</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      To create a platform where young minds can develop diplomatic skills, 
-                      engage in constructive debate, and foster international understanding 
-                      through simulated United Nations proceedings.
+                      To create a platform within Fazaia Degree College Faisal where students can develop diplomatic skills, 
+                      engage in constructive debate, and foster leadership qualities through simulated United Nations proceedings.
                     </p>
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
@@ -256,15 +235,15 @@ const AboutUs = () => {
                         <ul className="text-gray-700 space-y-2">
                           <li className="flex items-start">
                             <span className="text-blue-500 mr-2">✓</span>
-                            Develop future leaders through diplomatic simulation
+                            Develop leadership skills through diplomatic simulation
                           </li>
                           <li className="flex items-start">
                             <span className="text-blue-500 mr-2">✓</span>
-                            Promote cross-cultural understanding
+                            Enhance public speaking and debate abilities
                           </li>
                           <li className="flex items-start">
                             <span className="text-blue-500 mr-2">✓</span>
-                            Enhance public speaking and negotiation skills
+                            Foster critical thinking and research skills
                           </li>
                         </ul>
                       </div>
@@ -273,15 +252,15 @@ const AboutUs = () => {
                         <ul className="text-gray-700 space-y-2">
                           <li className="flex items-start">
                             <span className="text-purple-500 mr-2">★</span>
-                            Become Pakistan's leading MUN conference
+                            Become Fazaia's premier MUN conference
                           </li>
                           <li className="flex items-start">
                             <span className="text-purple-500 mr-2">★</span>
-                            Foster global citizenship among youth
+                            Create confident future leaders
                           </li>
                           <li className="flex items-start">
                             <span className="text-purple-500 mr-2">★</span>
-                            Create a network of future diplomats
+                            Build a strong MUN community within the college
                           </li>
                         </ul>
                       </div>
@@ -294,83 +273,51 @@ const AboutUs = () => {
         </div>
       </div>
 
-      {/* Principal's Message */}
-      <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-purple-700">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-white/20 animate-fade-in">
-            <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-              <div className="flex-shrink-0">
-                <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
-                  <span className="text-5xl"></span>
-                </div>
-              </div>
-              <div className="flex-1 text-white">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-1 bg-white/50 mr-4"></div>
-                  <h3 className="text-2xl font-bold">Message from the Principal</h3>
-                </div>
-                <blockquote className="text-lg italic mb-6">
-                  "FMUN represents the pinnacle of academic excellence and diplomatic education. 
-                  Through this platform, we aim to nurture the leaders of tomorrow by providing 
-                  them with the skills, knowledge, and confidence to engage with global challenges. 
-                  Each debate, each resolution, and each handshake at FMUN shapes character and 
-                  builds bridges between cultures."
-                </blockquote>
-                <div>
-                  <div className="font-bold text-xl">Uzma Ali</div>
-                  <div className="text-white/80">Principal, Fazaia Degree College Faisal</div>
-                </div>
-              </div>
+      {/* Committees Section */}
+      <div className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12 animate-fade-in">
+            Our Committees
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="text-3xl mb-3">🇵🇰</div>
+              <h3 className="text-xl font-bold mb-2">PNA</h3>
+              <p className="text-sm opacity-90">Pakistan National Assembly</p>
+              <p className="text-xs mt-2 opacity-80">Parliamentary debate on national issues</p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="text-3xl mb-3">🛡️</div>
+              <h3 className="text-xl font-bold mb-2">UNSC</h3>
+              <p className="text-sm opacity-90">UN Security Council</p>
+              <p className="text-xs mt-2 opacity-80">International peace and security</p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="text-3xl mb-3">👩</div>
+              <h3 className="text-xl font-bold mb-2">UN Women</h3>
+              <p className="text-sm opacity-90">UN Women</p>
+              <p className="text-xs mt-2 opacity-80">Gender equality and women empowerment</p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="text-3xl mb-3">🌍</div>
+              <h3 className="text-xl font-bold mb-2">SOCHUM</h3>
+              <p className="text-sm opacity-90">Social, Cultural & Humanitarian</p>
+              <p className="text-xs mt-2 opacity-80">Social and humanitarian issues</p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white transform transition-all duration-300 hover:scale-105 hover:shadow-2xl md:col-span-2 lg:col-span-1">
+              <div className="text-3xl mb-3">⚕️</div>
+              <h3 className="text-xl font-bold mb-2">WHO</h3>
+              <p className="text-sm opacity-90">World Health Organization</p>
+              <p className="text-xs mt-2 opacity-80">Global health issues</p>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Testimonials
-      <div className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12 animate-fade-in">
-            What Our Delegates Say
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div 
-                key={index} 
-                className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 transform transition-all duration-300 hover:scale-[1.02] animate-slide-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex items-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-3xl">
-                    {testimonial.image}
-                  </div>
-                  <div className="ml-4">
-                    <div className="font-bold text-gray-900 text-lg">{testimonial.name}</div>
-                    <div className="text-gray-600 text-sm">{testimonial.role}</div>
-                  </div>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`w-5 h-5 ${i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                
-                <p className="text-gray-600 italic">"{testimonial.review}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div> */}
 
       {/* FAQ Section */}
       <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -403,6 +350,36 @@ const AboutUs = () => {
         </div>
       </div>
 
+      {/* Contact Information */}
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold mb-2">Get in Touch</h2>
+            <p className="opacity-90">Have questions? We're here to help!</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-3xl mb-2">📞</div>
+              <div className="font-semibold">WhatsApp</div>
+              <div className="text-sm opacity-90">0307 6646639</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-3xl mb-2">📧</div>
+              <div className="font-semibold">Email</div>
+              <div className="text-sm opacity-90">fmun26@gmail.com</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-3xl mb-2">📍</div>
+              <div className="font-semibold">Venue</div>
+              <div className="text-sm opacity-90">Fazaia Degree College, PAF Base Faisal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Final CTA */}
       <div className="py-12 px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto">
@@ -410,21 +387,21 @@ const AboutUs = () => {
             Ready to Join FMUN 2026?
           </h2>
           <p className="text-xl text-gray-600 mb-8 animate-slide-up">
-            Become part of Pakistan's premier diplomatic simulation
+            Become part of Fazaia's premier diplomatic simulation
           </p>
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg animate-bounce-slow"
           >
             Register Now
             <svg className="w-6 h-6 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
 
-      {/* Add CSS animations */}
+      {/* CSS Animations */}
       <style jsx>{`
         @keyframes fade-in {
           from {
