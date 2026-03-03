@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { GoArrowUpRight } from "react-icons/go";
+import { FaBars, FaTimes } from "react-icons/fa";
+import fmunblack from "../assets/fmunblack.png"
+
+const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  return (
+    <div className="bg-blue-300 w-full h-[90px] flex items-center justify-between px-4 md:px-10 relative">
+      {/* Logo */}
+      <Link to="/" onClick={() => setIsMenuOpen(false)}>
+        <img
+          className="w-[72px] md:w-[75px] h-[70px] md:h-[72px] mt-[2px] cursor-pointer"
+          src={fmunblack}
+          alt="FMUN Logo"
+        />
+      </Link>
+
+      {/* Mobile Menu Button */}
+      <div className="md:hidden">
+        <button
+          onClick={toggleMenu}
+          className="text-white text-2xl focus:outline-none"
+        >
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+      </div>
+
+      {/* Navigation Links - Desktop */}
+      <div className="hidden md:block">
+        <ul className="flex flex-row space-x-4 lg:space-x-6">
+          <li>
+            <Link to="/" className="text-black cursor-pointer  font-extralight  text-lg lg:text-xl hover:text-gray-300 transition">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link to="/about" className="text-black cursor-pointer font-extralight text-lg lg:text-xl hover:text-gray-300 transition">
+              About us
+            </Link>
+          </li>
+          <li>
+            <Link to="/committee" className="text-black  cursor-pointer  font-extralight text-lg lg:text-xl hover:text-gray-300 transition">
+              Committee
+            </Link>
+          </li>
+          <li>
+            <Link to="/status" className="text-black  cursor-pointer  font-extralight text-lg lg:text-xl hover:text-gray-300 transition">
+              Status
+            </Link>
+          </li>
+          <li>
+            <Link to="/register" className="text-black cursor-pointer  font-extralight text-lg lg:text-xl hover:text-gray-300 transition">
+              Register Now
+            </Link>
+
+          </li>
+        </ul>
+      </div>
+
+      {/* Button - Desktop */}
+      <div className="hidden md:block flex items-center space-x-4">
+        <Link to="/login" className="gap-1 flex bg-white text-black  font-extralight px-4 lg:px-5 py-2 cursor-pointer hover:bg-gray-200 transition items-center">
+          Login <span className='text-xl mt-1'><GoArrowUpRight /></span>
+        </Link>
+      </div>
+
+      {/* Mobile Menu */}
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden absolute top-[90px] left-0 w-full bg-blue-300 z-50 py-4 px-4
+    transform transition-all duration-300 ease-in-out
+    ${isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-5 pointer-events-none"}
+  `}
+      >
+        <ul className="flex flex-col space-y-4">
+          <li>
+            <Link
+              to="/"
+              className="text-black cursor-pointer font-extralight text-lg lg:text-xl hover:text-gray-300 transition"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/about"
+              className="text-black cursor-pointer font-extralight text-lg lg:text-xl hover:text-gray-300 transition"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About us
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/committee"
+              className="text-black cursor-pointer font-extralight text-lg lg:text-xl hover:text-gray-300 transition"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Committee
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/status"
+              className="text-black cursor-pointer font-extralight text-lg lg:text-xl hover:text-gray-300 transition"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Status
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/register"
+              className="text-black cursor-pointer font-extralight text-lg lg:text-xl hover:text-gray-300 transition"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Register Now
+            </Link>
+          </li>
+          <li className="flex items-center space-x-4">
+            <Link
+              to="/login"
+              className="gap-1 flex bg-white text-black font-extralight px-4 lg:px-5 py-2 cursor-pointer hover:bg-gray-200 transition items-center"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Login <span className="text-xl mt-1"><GoArrowUpRight /></span>
+            </Link>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  );
+};
+
+export default Navbar;
