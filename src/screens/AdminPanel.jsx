@@ -11,7 +11,6 @@ const AdminPanel = ({ onLogout }) => {
   const [editForm, setEditForm] = useState({});
   const [activeTab, setActiveTab] = useState("analytics");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [committeeFilter, setCommitteeFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
 
   useEffect(() => {
@@ -34,14 +33,62 @@ const AdminPanel = ({ onLogout }) => {
     }
   };
 
+  // Function to generate registration number based on committee
+  const generateRegNo = (committee, category, existingRegs) => {
+    if (category === "delegate") {
+      // For delegates, generate committee-specific numbers
+      const committeeRegs = existingRegs.filter(reg => 
+        reg.assignedCommittee === committee && 
+        reg.category === "delegate" &&
+        reg.status === "accepted"
+      );
+      
+      // Get the next number for this committee
+      const nextNumber = (committeeRegs.length + 1).toString().padStart(3, '0');
+      
+      // Map committee to prefix
+      const prefixMap = {
+        "PNA": "PNA",
+        "UNSC": "UNSC",
+        "UN Women": "UNW",
+        "SOCHUM": "SOC",
+        "WHO": "WHO"
+      };
+      
+      const prefix = prefixMap[committee] || "DEL";
+      return `${prefix}${nextNumber}`;
+    } else {
+      // For other categories (observer, qawali, concert, both)
+      const otherRegs = existingRegs.filter(reg => 
+        reg.category !== "delegate" && 
+        reg.status === "accepted"
+      );
+      const nextNumber = (otherRegs.length + 1).toString().padStart(3, '0');
+      return `FMUN${nextNumber}`;
+    }
+  };
+
   const updateStatus = async (id, status) => {
     try {
       if (status === "rejected") {
         await deleteDoc(doc(db, "registrations", id));
         fetchRegistrations();
       } else {
+        const registration = registrations.find(r => r.id === id);
+        
+        // Generate registration number when accepting
+        let regNo = registration.regNo;
+        if (status === "accepted" && !registration.regNo) {
+          if (registration.category === "delegate") {
+            regNo = generateRegNo(registration.assignedCommittee || registration.committeePref1, "delegate", registrations);
+          } else {
+            regNo = generateRegNo(null, registration.category, registrations);
+          }
+        }
+
         await updateDoc(doc(db, "registrations", id), { 
           status,
+          regNo,
           updatedAt: new Date() 
         });
         fetchRegistrations();
@@ -53,8 +100,19 @@ const AdminPanel = ({ onLogout }) => {
 
   const updateUserDetails = async (id, updatedData) => {
     try {
+      const registration = registrations.find(r => r.id === id);
+      
+      // Check if committee was changed for a delegate
+      let regNo = updatedData.regNo;
+      if (registration.category === "delegate" && 
+          updatedData.assignedCommittee !== registration.assignedCommittee) {
+        // Regenerate registration number based on new committee
+        regNo = generateRegNo(updatedData.assignedCommittee, "delegate", registrations);
+      }
+
       await updateDoc(doc(db, "registrations", id), {
         ...updatedData,
+        regNo,
         updatedAt: new Date()
       });
       setEditingUser(null);
@@ -68,14 +126,13 @@ const AdminPanel = ({ onLogout }) => {
   const startEditing = (user) => {
     setEditingUser(user.id);
     setEditForm({
-      committee: user.committee || "",
-      country: user.country || "",
+      assignedCommittee: user.assignedCommittee || user.committeePref1 || "",
+      assignedCountryMember: user.assignedCountryMember || "",
       category: user.category || "delegate",
-      pnaParty: user.pnaParty || "",
-      pnaMember: user.pnaMember || "",
       payment: user.payment || "",
       paymentScreenshot: user.paymentScreenshot || "",
-      munExperience: user.munExperience || ""
+      munExperience: user.munExperience || "",
+      regNo: user.regNo || ""
     });
   };
 
@@ -86,9 +143,11 @@ const AdminPanel = ({ onLogout }) => {
 
   // Updated fee structure to match registration form
   const feeStructure = {
-    delegate: 2000,
-    observer: 2500,
-    qawali: 1000
+    delegate: 2500,
+    observer: 3000,
+    qawali: 1250,
+    concert: 1250,
+    both: 2000
   };
 
   const calculateAnalytics = () => {
@@ -97,27 +156,40 @@ const AdminPanel = ({ onLogout }) => {
       totalAccepted: registrations.filter(r => r.status === "accepted").length,
       totalRejected: registrations.filter(r => r.status === "rejected").length,
       totalPending: registrations.filter(r => !r.status || r.status === "pending").length,
-      committees: {},
+      committeePref1: {},
+      committeePref2: {},
+      assignedCommittees: {},
       categories: {
         delegate: 0,
         observer: 0,
-        qawali: 0
+        qawali: 0,
+        concert: 0,
+        both: 0
       },
       paymentMethods: {
-        Easypaisa: 0,
+        "Bank Transfer": 0,
         Cash: 0
       },
-      pnaMembers: {},
       totalAmount: 0,
-      totalEasypaisaAmount: 0,
+      totalBankAmount: 0,
       totalCashAmount: 0
     };
 
     registrations.forEach(reg => {
       if (reg.status === "accepted") {
-        // Committee counts
-        if (reg.committee) {
-          analytics.committees[reg.committee] = (analytics.committees[reg.committee] || 0) + 1;
+        // Committee Preference 1 counts
+        if (reg.committeePref1) {
+          analytics.committeePref1[reg.committeePref1] = (analytics.committeePref1[reg.committeePref1] || 0) + 1;
+        }
+
+        // Committee Preference 2 counts
+        if (reg.committeePref2) {
+          analytics.committeePref2[reg.committeePref2] = (analytics.committeePref2[reg.committeePref2] || 0) + 1;
+        }
+
+        // Assigned Committees counts
+        if (reg.assignedCommittee) {
+          analytics.assignedCommittees[reg.assignedCommittee] = (analytics.assignedCommittees[reg.assignedCommittee] || 0) + 1;
         }
 
         // Category counts
@@ -127,15 +199,10 @@ const AdminPanel = ({ onLogout }) => {
         }
 
         // Payment method counts
-        if (reg.payment === "Easypaisa") {
-          analytics.paymentMethods.Easypaisa++;
+        if (reg.payment === "Bank Transfer") {
+          analytics.paymentMethods["Bank Transfer"]++;
         } else if (reg.payment === "Cash") {
           analytics.paymentMethods.Cash++;
-        }
-
-        // PNA Members count
-        if (reg.pnaMember) {
-          analytics.pnaMembers[reg.pnaMember] = (analytics.pnaMembers[reg.pnaMember] || 0) + 1;
         }
 
         // Calculate total amount
@@ -143,8 +210,8 @@ const AdminPanel = ({ onLogout }) => {
         analytics.totalAmount += fee;
 
         // Calculate payment method specific amounts
-        if (reg.payment === "Easypaisa") {
-          analytics.totalEasypaisaAmount += fee;
+        if (reg.payment === "Bank Transfer") {
+          analytics.totalBankAmount += fee;
         } else if (reg.payment === "Cash") {
           analytics.totalCashAmount += fee;
         }
@@ -154,81 +221,25 @@ const AdminPanel = ({ onLogout }) => {
     return analytics;
   };
 
-  // Get unique committees for filter
-  const uniqueCommittees = [...new Set(registrations.map(reg => reg.committee).filter(Boolean))];
-
-  // Filter logic with committee filter
+  // Filter logic
   const filteredRegistrations = registrations.filter(reg => {
     const matchesFilter = filter === "all" || reg.status === filter;
-    const matchesSearch = reg.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         reg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         reg.whatsapp?.includes(searchTerm) ||
-                         reg.pnaMember?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = 
+      reg.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.whatsapp?.includes(searchTerm) ||
+      reg.ambassadorCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.regNo?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === "all" || (reg.category || "delegate") === categoryFilter;
-    const matchesCommittee = committeeFilter === "all" || reg.committee === committeeFilter;
     const matchesPayment = paymentFilter === "all" || reg.payment === paymentFilter;
-    return matchesFilter && matchesSearch && matchesCategory && matchesCommittee && matchesPayment;
+    return matchesFilter && matchesSearch && matchesCategory && matchesPayment;
   });
 
   const analytics = calculateAnalytics();
 
-  const committees = ["UNHRC", "UNSC", "DISEC", "WHO", "UNICEF", "ECOSOC", "SPECPOL", "UNGA", "PNA"];
-  const countries = ["Pakistan", "USA", "China", "UK", "India", "Turkey", "Germany", "France", "Japan", "Brazil", "Canada", "Australia", "Russia", "South Korea"];
-  const categories = ["delegate", "observer", "qawali"];
-  const paymentMethods = ["Easypaisa", "Cash"];
-
-  const pnaParties = [
-    { value: "PMLN", label: "Pakistan Muslim League (N)" },
-    { value: "PPP", label: "Pakistan Peoples Party" },
-    { value: "PTI", label: "Pakistan Tehreek-e-Insaf" },
-    { value: "IND", label: "Independent" }
-  ];
-
-  const pnaMembers = {
-    PMLN: [
-      "Shehbaz Sharif",
-      "Khwaja Asif",
-      "Faisal Vawda",
-      "Ata Tarar",
-      "Ahsan Iqbal Chaudhary",
-      "Sardar Ayaz Sadiq",
-      "Nawaz Sharif",
-      "Rana Sanaullah",
-      "Mohammed Ilyas Chaudhary",
-      "Chaudhary Farukh Altaf"
-    ],
-    PPP: [
-      "Asif Ali Zardari",
-      "Bilawal Bhutto Zardari",
-      "Murad Ali Shah",
-      "Sherry Rehman",
-      "Raja Parvez Ashraf",
-      "Syed Khursheed Ahmad Shah",
-      "Asifa Bhutto Zardari",
-      "Syed Ghulam Mustafa Shah",
-      "M. Irfan Ali Leghari",
-      "Abdul Qadir Patel"
-    ],
-    PTI: [
-      "Imran Khan",
-      "Murad Saeed",
-      "Faisal Qureshi",
-      "Fawad Chaudhary",
-      "Khurram Shehzad Nawaz",
-      "Asad Umer",
-      "Pervez Elahi",
-      "Ali Mohammed Khan",
-      "Pervez Khattak",
-      "Shahriyaar Afridi"
-    ],
-    IND: [
-      "Waqas Akram",
-      "Asad Qaisar",
-      "Shahram Khan Tarakai",
-      "M. Sher Ali Arab",
-      "Shahid Khan Khattak"
-    ]
-  };
+  const committees = ["PNA", "UNSC", "UN Women", "SOCHUM", "WHO"];
+  const categories = ["delegate", "observer", "qawali", "concert", "both"];
+  const paymentMethods = ["Bank Transfer", "Cash"];
 
   const AnalyticsTab = () => (
     <div className="space-y-6">
@@ -259,12 +270,12 @@ const AdminPanel = ({ onLogout }) => {
           <div className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
               <div className="flex items-center">
-                <span className="text-green-600 font-bold mr-2 text-lg">📱</span>
-                <span className="font-medium">Easypaisa</span>
+                <span className="text-green-600 font-bold mr-2 text-lg">🏦</span>
+                <span className="font-medium">Bank Transfer</span>
               </div>
               <div>
-                <span className="font-bold text-green-600 mr-3">{analytics.paymentMethods.Easypaisa}</span>
-                <span className="text-sm text-gray-600">Rs. {analytics.totalEasypaisaAmount.toLocaleString()}</span>
+                <span className="font-bold text-green-600 mr-3">{analytics.paymentMethods["Bank Transfer"]}</span>
+                <span className="text-sm text-gray-600">Rs. {analytics.totalBankAmount.toLocaleString()}</span>
               </div>
             </div>
             <div className="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
@@ -297,42 +308,65 @@ const AdminPanel = ({ onLogout }) => {
         </div>
       </div>
 
-      {/* Committee Distribution */}
+      {/* Committee Preference 1 Distribution */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Committee Distribution</h3>
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Committee Preference 1</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Object.entries(analytics.committees).map(([committee, count]) => (
-            <div key={committee} className="flex justify-between items-center bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl">
+          {Object.entries(analytics.committeePref1).map(([committee, count]) => (
+            <div key={committee} className="flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl">
+              <div className="font-medium text-gray-800">{committee}</div>
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">
+                {count}
+              </div>
+            </div>
+          ))}
+          {Object.keys(analytics.committeePref1).length === 0 && (
+            <div className="col-span-full text-center py-8 text-gray-500">
+              No committee preferences yet
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Committee Preference 2 Distribution */}
+      <div className="bg-white rounded-2xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Committee Preference 2</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Object.entries(analytics.committeePref2).map(([committee, count]) => (
+            <div key={committee} className="flex justify-between items-center bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl">
               <div className="font-medium text-gray-800">{committee}</div>
               <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-bold">
                 {count}
               </div>
             </div>
           ))}
-          {Object.keys(analytics.committees).length === 0 && (
+          {Object.keys(analytics.committeePref2).length === 0 && (
             <div className="col-span-full text-center py-8 text-gray-500">
-              No committee assignments yet
+              No committee preferences yet
             </div>
           )}
         </div>
       </div>
 
-      {/* PNA Members Distribution */}
-      {Object.keys(analytics.pnaMembers).length > 0 && (
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">PNA Members Distribution</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(analytics.pnaMembers).map(([member, count]) => (
-              <div key={member} className="flex justify-between items-center bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-xl">
-                <div className="font-medium text-gray-800">{member}</div>
-                <div className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-bold">
-                  {count}
-                </div>
+      {/* Assigned Committees Distribution */}
+      <div className="bg-white rounded-2xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Assigned Committees</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Object.entries(analytics.assignedCommittees).map(([committee, count]) => (
+            <div key={committee} className="flex justify-between items-center bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl">
+              <div className="font-medium text-gray-800">{committee}</div>
+              <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold">
+                {count}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+          {Object.keys(analytics.assignedCommittees).length === 0 && (
+            <div className="col-span-full text-center py-8 text-gray-500">
+              No committees assigned yet
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Fee Structure */}
       <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -421,7 +455,7 @@ const AdminPanel = ({ onLogout }) => {
                 <div className="flex-1 min-w-[200px]">
                   <input
                     type="text"
-                    placeholder="Search by name, email, phone, or PNA member..."
+                    placeholder="Search by name, email, phone, ambassador code, or reg no..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
@@ -439,18 +473,6 @@ const AdminPanel = ({ onLogout }) => {
                     <option key={cat} value={cat} className="capitalize">
                       {cat}
                     </option>
-                  ))}
-                </select>
-
-                {/* Committee Filter */}
-                <select
-                  value={committeeFilter}
-                  onChange={(e) => setCommitteeFilter(e.target.value)}
-                  className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[150px]"
-                >
-                  <option value="all">All Committees</option>
-                  {uniqueCommittees.map(com => (
-                    <option key={com} value={com}>{com}</option>
                   ))}
                 </select>
 
@@ -491,27 +513,44 @@ const AdminPanel = ({ onLogout }) => {
                 <table className="min-w-full">
                   <thead className="bg-gradient-to-r from-blue-500 to-purple-600">
                     <tr>
+                      <th className="px-6 py-4 text-left text-white font-semibold">Reg No.</th>
                       <th className="px-6 py-4 text-left text-white font-semibold">Candidate</th>
                       <th className="px-6 py-4 text-left text-white font-semibold">Contact</th>
                       <th className="px-6 py-4 text-left text-white font-semibold">Category</th>
-                      <th className="px-6 py-4 text-left text-white font-semibold">Committee</th>
-                      <th className="px-6 py-4 text-left text-white font-semibold">Country/Member</th>
+                      <th className="px-6 py-4 text-left text-white font-semibold">Committee Pref</th>
+                      <th className="px-6 py-4 text-left text-white font-semibold">
+                        <div className="flex items-center">
+                          <span className="mr-2">🎯</span>
+                          Assigned Committee
+                        </div>
+                      </th>
+                      <th className="px-6 py-4 text-left text-white font-semibold">
+                        <div className="flex items-center">
+                          <span className="mr-2">🌍</span>
+                          Assigned Country/Member
+                        </div>
+                      </th>
                       <th className="px-6 py-4 text-left text-white font-semibold">Payment</th>
+                      <th className="px-6 py-4 text-left text-white font-semibold">Ambassador</th>
                       <th className="px-6 py-4 text-left text-white font-semibold">Status</th>
-                      <th className="px-6 py-4 text-left text-white font-semibold">Date</th>
                       <th className="px-6 py-4 text-left text-white font-semibold">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {filteredRegistrations.length === 0 ? (
                       <tr>
-                        <td colSpan="9" className="px-6 py-8 text-center text-gray-500">
+                        <td colSpan="11" className="px-6 py-8 text-center text-gray-500">
                           No registrations found
                         </td>
                       </tr>
                     ) : (
                       filteredRegistrations.map((reg) => (
                         <tr key={reg.id} className="hover:bg-blue-50 transition duration-150">
+                          <td className="px-6 py-4">
+                            <span className="font-mono font-bold text-blue-600">
+                              {reg.regNo || "—"}
+                            </span>
+                          </td>
                           <td className="px-6 py-4">
                             <div className="font-semibold text-gray-900">{reg.fullName}</div>
                             <div className="text-sm text-gray-500">{reg.institution}</div>
@@ -536,10 +575,16 @@ const AdminPanel = ({ onLogout }) => {
                             )}
                           </td>
                           <td className="px-6 py-4">
-                            {editingUser === reg.id ? (
+                            <div>
+                              <div className="text-sm font-medium">1st: {reg.committeePref1 || "N/A"}</div>
+                              <div className="text-sm text-gray-500">2nd: {reg.committeePref2 || "N/A"}</div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {editingUser === reg.id && reg.category === "delegate" ? (
                               <select
-                                value={editForm.committee}
-                                onChange={(e) => setEditForm({...editForm, committee: e.target.value})}
+                                value={editForm.assignedCommittee}
+                                onChange={(e) => setEditForm({...editForm, assignedCommittee: e.target.value})}
                                 className="w-full p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500"
                               >
                                 <option value="">Select Committee</option>
@@ -548,58 +593,23 @@ const AdminPanel = ({ onLogout }) => {
                                 ))}
                               </select>
                             ) : (
-                              <span className="font-medium">{reg.committee || "Not assigned"}</span>
+                              <span className="font-medium">
+                                {reg.assignedCommittee || (reg.category === "delegate" ? "Not assigned" : "—")}
+                              </span>
                             )}
                           </td>
                           <td className="px-6 py-4">
                             {editingUser === reg.id ? (
-                              reg.committee === "PNA" ? (
-                                <div className="space-y-2">
-                                  <select
-                                    value={editForm.pnaParty}
-                                    onChange={(e) => setEditForm({...editForm, pnaParty: e.target.value, pnaMember: ""})}
-                                    className="w-full p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                                  >
-                                    <option value="">Select Party</option>
-                                    {pnaParties.map(party => (
-                                      <option key={party.value} value={party.value}>{party.label}</option>
-                                    ))}
-                                  </select>
-                                  {editForm.pnaParty && (
-                                    <select
-                                      value={editForm.pnaMember}
-                                      onChange={(e) => setEditForm({...editForm, pnaMember: e.target.value})}
-                                      className="w-full p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                                    >
-                                      <option value="">Select Member</option>
-                                      {pnaMembers[editForm.pnaParty]?.map(member => (
-                                        <option key={member} value={member}>{member}</option>
-                                      ))}
-                                    </select>
-                                  )}
-                                </div>
-                              ) : (
-                                <select
-                                  value={editForm.country}
-                                  onChange={(e) => setEditForm({...editForm, country: e.target.value})}
-                                  className="w-full p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                                >
-                                  <option value="">Select Country</option>
-                                  {countries.map(country => (
-                                    <option key={country} value={country}>{country}</option>
-                                  ))}
-                                </select>
-                              )
+                              <input
+                                type="text"
+                                value={editForm.assignedCountryMember || ""}
+                                onChange={(e) => setEditForm({...editForm, assignedCountryMember: e.target.value})}
+                                placeholder="Assign manually"
+                                className="w-full p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                              />
                             ) : (
                               <div>
-                                {reg.committee === "PNA" ? (
-                                  <div>
-                                    <div className="font-medium text-gray-900">{reg.pnaMember || "Not assigned"}</div>
-                                    <div className="text-xs text-gray-500">{reg.pnaParty || ""}</div>
-                                  </div>
-                                ) : (
-                                  <span className="font-medium">{reg.country || "Not assigned"}</span>
-                                )}
+                                <span className="font-medium">{reg.assignedCountryMember || "Not assigned"}</span>
                               </div>
                             )}
                           </td>
@@ -616,12 +626,12 @@ const AdminPanel = ({ onLogout }) => {
                                     <option key={method} value={method}>{method}</option>
                                   ))}
                                 </select>
-                                {editForm.payment === "Easypaisa" && (
+                                {editForm.payment === "Bank Transfer" && (
                                   <input
                                     type="text"
                                     value={editForm.paymentScreenshot}
                                     onChange={(e) => setEditForm({...editForm, paymentScreenshot: e.target.value})}
-                                    placeholder="Transaction ID"
+                                    placeholder="Transaction details"
                                     className="w-full p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500 text-sm"
                                   />
                                 )}
@@ -629,19 +639,21 @@ const AdminPanel = ({ onLogout }) => {
                             ) : (
                               <div>
                                 <span className="font-medium">{reg.payment || "Not selected"}</span>
-                                {reg.payment === "Easypaisa" && reg.paymentScreenshot && (
-                                  <div className="text-xs text-gray-500 mt-1">TID: {reg.paymentScreenshot}</div>
+                                {reg.payment === "Bank Transfer" && reg.paymentScreenshot && (
+                                  <div className="text-xs text-gray-500 mt-1">{reg.paymentScreenshot}</div>
                                 )}
                               </div>
                             )}
                           </td>
                           <td className="px-6 py-4">
+                            <div>
+                              <span className="font-mono text-sm">{reg.ambassadorCode || "—"}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${reg.status === 'accepted' ? 'bg-green-100 text-green-800' : reg.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
                               {reg.status || 'pending'}
                             </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {reg.createdAt?.toDate?.().toLocaleDateString() || 'N/A'}
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex flex-col sm:flex-row gap-2">
