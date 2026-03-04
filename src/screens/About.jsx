@@ -30,8 +30,8 @@ const AboutUs = () => {
   const stats = [
     { number: "300+", label: "Expected Delegates" },
     { number: "5", label: "Committees" },
-    { number: "2", label: "Conference Days" },
-    { number: "25+", label: "Executive Board" }
+    { number: "3", label: "Conference Days" },
+    { number: "8+", label: "Executive Board" }
   ];
 
   return (

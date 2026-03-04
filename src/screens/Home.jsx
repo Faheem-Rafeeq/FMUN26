@@ -41,8 +41,8 @@ const Home = () => {
   const feeStructure = [
     { category: "Delegate", price: "PKR 2,500", description: "All Access + Dinner", icon: "🎯", color: "from-blue-500 to-purple-600" },
     { category: "Observer", price: "PKR 3,000", description: "All Access + Dinner", icon: "👁️", color: "from-green-500 to-teal-600" },
-    { category: "Qawali Night", price: "PKR 1,250", description: "Base Faisal/Ex-Fazains Only", icon: "🎵", color: "from-purple-500 to-pink-600" },
-    { category: "Concert Only", price: "PKR 1,250", description: "Base Residents Only", icon: "🎸", color: "from-pink-500 to-rose-600" },
+    { category: "Qawali Night", price: "PKR 1,250", description: "Fazaians,Base Faisal residents and Ex-Fazaians only", icon: "🎵", color: "from-purple-500 to-pink-600" },
+    { category: "Concert Only", price: "PKR 1,250", description: "Fazaians,Base Faisal residents and Ex-Fazaians only", icon: "🎸", color: "from-pink-500 to-rose-600" },
     { category: "Both Events", price: "PKR 2,000", description: "Qawali + Concert", icon: "🎉", color: "from-amber-500 to-orange-600" }
   ];
 
@@ -200,14 +200,14 @@ const Home = () => {
                 <span className="text-lg mr-2">🎵</span>
                 Qawali Night Eligibility
               </h4>
-              <p className="text-sm text-blue-700">Base Faisal residents and Ex-Fazains only</p>
+              <p className="text-sm text-blue-700">Fazaians,Base Faisal residents and Ex-Fazaians only</p>
             </div>
             <div className="bg-pink-50 rounded-xl p-4 border border-pink-200">
               <h4 className="font-bold text-pink-800 mb-2 flex items-center">
                 <span className="text-lg mr-2">🎸</span>
                 Concert Eligibility
               </h4>
-              <p className="text-sm text-pink-700">Base residents only</p>
+              <p className="text-sm text-pink-700">Fazaians,Base Faisal residents and Ex-Fazaians only</p>
             </div>
           </div>
         </div>
@@ -265,7 +265,7 @@ const Home = () => {
                   <div>
                     <h4 className="font-semibold text-amber-800 mb-1">Onsite Registration</h4>
                     <p className="text-sm text-amber-700">
-                      Please bring cash payment to the registration desk on the event day
+                      Please bring cash payment to the registration desk
                     </p>
                   </div>
                 </div>
@@ -318,8 +318,8 @@ const Home = () => {
               <div className="space-y-4 sm:space-y-6">
                 <div className="text-center p-3 sm:p-4 bg-blue-50 rounded-xl">
                   <div className="text-xs sm:text-sm font-medium text-blue-600 mb-1">Dates</div>
-                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">March 2026</div>
-                  <div className="text-sm sm:text-base text-gray-600 mt-2">Two Days of Diplomatic Excellence</div>
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">27 to 29th March 2026</div>
+                  <div className="text-sm sm:text-base text-gray-600 mt-2">Three Days of Diplomatic Excellence</div>
                 </div>
                 
                 <div className="text-center p-3 sm:p-4 bg-purple-50 rounded-xl">

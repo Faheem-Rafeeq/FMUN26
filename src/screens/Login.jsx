@@ -33,7 +33,7 @@ const AdminLogin = ({ onClose }) => {
     setError("");
     setLoading(true);
     
-    if (adminCode !== "123456") {
+    if (adminCode !== "63342378") {
       setError("Invalid admin security code");
       setLoading(false);
       return;

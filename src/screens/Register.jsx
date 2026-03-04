@@ -599,7 +599,7 @@ const Register = () => {
           <div className="p-2 sm:p-3 md:p-4 bg-yellow-50 rounded-lg border border-yellow-200">
             <p className="text-xs sm:text-sm text-yellow-700 flex items-center">
               <span className="font-bold mr-2">💰</span>
-              <span>For onsite registration, please bring cash payment to the registration desk.</span>
+              <span>For on-site registration, please bring your cash payment to the registration desk along with the email you used during registration</span>
             </p>
           </div>
 
@@ -653,8 +653,8 @@ const Register = () => {
           </h4>
           <ul className="text-xs sm:text-sm text-red-600 space-y-1">
             <li>• Payment is <span className="font-bold">NON-REFUNDABLE</span> under any circumstances</li>
-            <li>• Base Faisal residents and Ex-Fazains only for Qawali Night (PKR 1,250)</li>
-            <li>• Base residents only for Concert (PKR 1,250)</li>
+            <li>• Fazaians,Base Faisal residents and Ex-Fazaians only for Qawali Night (PKR 1,250)</li>
+            <li>• Fazaians,Base Faisal residents and Ex-Fazaians only for Concert (PKR 1,250)</li>
             <li>• Both events: PKR 2,000 (for eligible participants)</li>
             {formData.payment === "Bank Transfer" && (
               <li>• Must send payment screenshot with name and email to 03076646639</li>
