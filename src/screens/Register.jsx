@@ -229,7 +229,7 @@ const Register = () => {
         {success && (
           <div className="mb-3 sm:mb-4 md:mb-6 p-2 sm:p-3 md:p-4 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-green-600 font-semibold text-center text-xs sm:text-sm md:text-base">
-              ✅ Registration Successful! You will receive confirmation on your WhatsApp.
+              ✅ Registration Successful! You will receive confirmation on your WhatsApp after payment screenshot.
             </p>
             <p className="text-green-500 text-xs sm:text-sm text-center mt-1 sm:mt-2">
               Keep your payment proof safe for verification.
@@ -589,7 +589,7 @@ const Register = () => {
             {formData.payment === "Cash" && (
               <div className="mt-3 p-2 sm:p-3 bg-amber-50 rounded-lg border border-amber-200">
                 <p className="text-xs sm:text-sm text-amber-700">
-                  💡 You selected Cash Payment. Please bring the exact amount to the registration desk on the event day.
+                  💡 You selected Cash Payment. Please bring the exact amount to the registration desk for confirmation.
                 </p>
               </div>
             )}
