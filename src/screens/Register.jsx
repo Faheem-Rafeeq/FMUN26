@@ -408,7 +408,7 @@ const Register = () => {
           {/* MUN Experience */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              MUN Experience *
+              MUN Experience / Additional *
             </label>
             <textarea
               name="munExperience"
@@ -416,7 +416,7 @@ const Register = () => {
               onChange={handleChange}
               rows="2"
               className="w-full p-2 sm:p-2.5 md:p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-sm"
-              placeholder="Tell us about your previous MUN experiences (if any). If you're a beginner, just say 'No prior experience'"
+              placeholder="Tell us about your previous MUN experiences (if any). And any details about Your favourite Personalities , countries and committees'"
               required
             />
           </div>
